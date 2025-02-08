@@ -1,30 +1,65 @@
 package pl.edu.agh.mwo.invoice;
 
-import java.math.BigDecimal;
-import java.util.Collection;
-
 import pl.edu.agh.mwo.invoice.product.Product;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
 public class Invoice {
-    private Collection<Product> products;
+    private List<Product> products = new ArrayList<>();
 
     public void addProduct(Product product) {
-        // TODO: implement
+        if (product != null) {
+            products.add(product);
+        }else {
+            throw new IllegalArgumentException("Product is null");
+        }
     }
 
     public void addProduct(Product product, Integer quantity) {
-        // TODO: implement
+        if (quantity > 0) {
+            for (int i = 1; i <= quantity; i++) {
+                products.add(product);
+            }
+        } else if(product != null) {
+            throw new IllegalArgumentException("Product is null");
+        }else {
+            throw new IllegalArgumentException("Quantity must be greater than 0");
+        }
+
     }
 
     public BigDecimal getSubtotal() {
-        return null;
+        BigDecimal subtotal = BigDecimal.ZERO;
+        if (this.products != null) {
+            for (Product product : products) {
+                subtotal = subtotal.add(product.getPrice());
+            }
+            return subtotal;
+        } else {
+            return BigDecimal.ZERO;
+        }
+
     }
 
     public BigDecimal getTax() {
-        return null;
+        BigDecimal tax = BigDecimal.ZERO;
+        for (Product product : products) {
+            tax = tax.add(product.getTaxPercent().multiply(product.getPrice()));
+        }
+        return tax;
     }
 
     public BigDecimal getTotal() {
-        return null;
+        if (products != null) {
+            BigDecimal total = BigDecimal.ZERO.add(this.getSubtotal()).add(this.getTax());
+            return total;
+        }
+        if (this.getTax() == null) {
+            return this.getSubtotal();
+        }
+        return BigDecimal.ZERO;
     }
+
 }
