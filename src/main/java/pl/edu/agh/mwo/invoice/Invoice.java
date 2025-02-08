@@ -3,15 +3,15 @@ package pl.edu.agh.mwo.invoice;
 import pl.edu.agh.mwo.invoice.product.Product;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Invoice {
-    private List<Product> products = new ArrayList<>();
+    private Map<Product,Integer> products = new HashMap<>();
 
     public void addProduct(Product product) {
         if (product != null) {
-            products.add(product);
+            products.put(product,1);
         }else {
             throw new IllegalArgumentException("Product is null");
         }
@@ -19,9 +19,7 @@ public class Invoice {
 
     public void addProduct(Product product, Integer quantity) {
         if (quantity > 0) {
-            for (int i = 1; i <= quantity; i++) {
-                products.add(product);
-            }
+                products.put(product,quantity);
         } else if(product != null) {
             throw new IllegalArgumentException("Product is null");
         }else {
@@ -33,8 +31,9 @@ public class Invoice {
     public BigDecimal getSubtotal() {
         BigDecimal subtotal = BigDecimal.ZERO;
         if (this.products != null) {
-            for (Product product : products) {
-                subtotal = subtotal.add(product.getPrice());
+            for (Product product : products.keySet()) {
+                Integer quantity = products.get(product);
+                subtotal = subtotal.add(product.getPrice().multiply(BigDecimal.valueOf(quantity)));
             }
             return subtotal;
         } else {
@@ -45,16 +44,16 @@ public class Invoice {
 
     public BigDecimal getTax() {
         BigDecimal tax = BigDecimal.ZERO;
-        for (Product product : products) {
-            tax = tax.add(product.getTaxPercent().multiply(product.getPrice()));
+        for (Product product : products.keySet()) {
+            Integer quantity = products.get(product);
+            tax = tax.add(product.getTaxPercent().multiply(product.getPrice()).multiply(BigDecimal.valueOf(quantity)));
         }
         return tax;
     }
 
     public BigDecimal getTotal() {
         if (products != null) {
-            BigDecimal total = BigDecimal.ZERO.add(this.getSubtotal()).add(this.getTax());
-            return total;
+            return this.getSubtotal().add(this.getTax());
         }
         if (this.getTax() == null) {
             return this.getSubtotal();
