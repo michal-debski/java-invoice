@@ -2,7 +2,7 @@ name: Checkstyle on branch
 on: [push]
 jobs:
   checkstyle:
-    name: Runner
+    name: Run for checkstyle
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
