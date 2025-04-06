@@ -1,17 +1,17 @@
 package pl.edu.agh.mwo.invoice;
 
-import java.math.BigDecimal;
-
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import pl.edu.agh.mwo.invoice.Invoice;
 import pl.edu.agh.mwo.invoice.product.DairyProduct;
 import pl.edu.agh.mwo.invoice.product.OtherProduct;
 import pl.edu.agh.mwo.invoice.product.Product;
 import pl.edu.agh.mwo.invoice.product.TaxFreeProduct;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class InvoiceTest {
     private Invoice invoice;
@@ -124,5 +124,30 @@ public class InvoiceTest {
     @Test(expected = IllegalArgumentException.class)
     public void testAddingNullProduct() {
         invoice.addProduct(null);
+    }
+
+    @Test
+    public void testAddNumberForInvoice() {
+        String expectedInvoiceNumber = "INV" + LocalDate.now().getYear() + "-"
+                + LocalDate.now().getMonthValue() + "-"
+                + LocalDate.now().getDayOfMonth() + LocalDateTime.now().getHour()
+                + LocalDateTime.now().getMinute() + LocalDateTime.now().getSecond();
+        String invoiceNumber = invoice.getInvoiceNumber();
+        Assert.assertEquals(expectedInvoiceNumber, invoiceNumber);
+    }
+
+    @Test
+    public void testPrintingForInvoice() {
+        invoice.addProduct(new TaxFreeProduct("Chleb", new BigDecimal("5")), 2);
+        // 3x chedar - price with tax: 32.40
+        invoice.addProduct(new DairyProduct("Chedar", new BigDecimal("10")), 3);
+        // 1000x pinezka - price with tax: 12.30
+        invoice.addProduct(new OtherProduct("Pinezka", new BigDecimal("0.01")), 1000);
+
+        String actualInvoicePrint = invoice.printInvoice();
+        Assert.assertTrue(actualInvoicePrint
+                .startsWith("Invoice number: " + invoice.getInvoiceNumber()));
+        Assert.assertTrue(actualInvoicePrint
+                .endsWith("\nLiczba pozycji: " + 3));
     }
 }

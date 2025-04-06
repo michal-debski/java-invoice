@@ -1,13 +1,21 @@
 package pl.edu.agh.mwo.invoice;
 
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
-
 import pl.edu.agh.mwo.invoice.product.Product;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class Invoice {
-    private Map<Product, Integer> products = new HashMap<Product, Integer>();
+    private Map<Product, Integer> products = new HashMap<>();
+
+    private final String invoiceNumber = "INV" + LocalDate.now().getYear() + "-"
+            + LocalDate.now().getMonthValue() + "-"
+            + LocalDate.now().getDayOfMonth() + LocalDateTime.now().getHour()
+            + LocalDateTime.now().getMinute() + LocalDateTime.now().getSecond();
 
     public void addProduct(Product product) {
         addProduct(product, 1);
@@ -40,5 +48,21 @@ public class Invoice {
             totalGross = totalGross.add(product.getPriceWithTax().multiply(quantity));
         }
         return totalGross;
+    }
+
+    public String getInvoiceNumber() {
+        return invoiceNumber;
+    }
+
+    public String printInvoice() {
+        StringBuilder invoice = new StringBuilder();
+        List<String> list = products.keySet().stream()
+                .map(t -> t.getName() + "\t" + products.get(t) + "\t" + getNetTotal() + "\n")
+                .toList();
+        for (String s : list) {
+            invoice.append(s);
+        }
+        return "Invoice number: " + invoiceNumber + "\n" + invoice + "\n"
+                + "Liczba pozycji: " + products.size();
     }
 }
