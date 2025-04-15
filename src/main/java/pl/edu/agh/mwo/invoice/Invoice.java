@@ -18,14 +18,23 @@ public class Invoice {
             + LocalDateTime.now().getMinute() + LocalDateTime.now().getSecond();
 
     public void addProduct(Product product) {
-        addProduct(product, 1);
+        if (products.containsKey(product)) {
+            products.replace(product, products.get(product) + 1);
+        }else{
+            addProduct(product, 1);
+        }
+
     }
 
     public void addProduct(Product product, Integer quantity) {
         if (product == null || quantity <= 0) {
             throw new IllegalArgumentException();
         }
-        products.put(product, quantity);
+        if (products.containsKey(product)) {
+            products.replace(product, products.get(product) + quantity);
+        }else{
+            products.put(product, quantity);
+        }
     }
 
     public BigDecimal getNetTotal() {
@@ -57,12 +66,18 @@ public class Invoice {
     public String printInvoice() {
         StringBuilder invoice = new StringBuilder();
         List<String> list = products.keySet().stream()
-                .map(t -> t.getName() + "\t" + products.get(t) + "\t" + getNetTotal() + "\n")
+                .map(product -> product.getName() + "\t" + products.get(product) + "\t" +
+                        calculatePriceForProductAndQuantity(product, products.get(product)) + "\n")
                 .toList();
         for (String s : list) {
             invoice.append(s);
         }
         return "Invoice number: " + invoiceNumber + "\n" + invoice + "\n"
                 + "Liczba pozycji: " + products.size();
+    }
+
+    private BigDecimal calculatePriceForProductAndQuantity(Product product, Integer quantity) {
+        return product.getPriceWithTax().multiply(new BigDecimal(quantity));
+
     }
 }
