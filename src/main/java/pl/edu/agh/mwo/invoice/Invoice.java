@@ -20,7 +20,7 @@ public class Invoice {
     public void addProduct(Product product) {
         if (products.containsKey(product)) {
             products.replace(product, products.get(product) + 1);
-        }else{
+        } else {
             addProduct(product, 1);
         }
 
@@ -32,7 +32,7 @@ public class Invoice {
         }
         if (products.containsKey(product)) {
             products.replace(product, products.get(product) + quantity);
-        }else{
+        } else {
             products.put(product, quantity);
         }
     }
@@ -66,8 +66,8 @@ public class Invoice {
     public String printInvoice() {
         StringBuilder invoice = new StringBuilder();
         List<String> list = products.keySet().stream()
-                .map(product -> product.getName() + "\t" + products.get(product) + "\t" +
-                        calculatePriceForProductAndQuantity(product, products.get(product)) + "\n")
+                .map(product -> product.getName() + "\t" + products.get(product) + "\t"
+                        + calculatePriceForProductAndQuantity(product, products.get(product)) + "\n")
                 .toList();
         for (String s : list) {
             invoice.append(s);
