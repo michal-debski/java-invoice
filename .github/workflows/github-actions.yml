@@ -1,4 +1,4 @@
-name: CI for Java Invoice
+name: CI and Checkstyle for Java Invoice
 on: [push]
 jobs:
   test:
@@ -13,7 +13,6 @@ jobs:
           distribution: 'adopt'
       - name: Test
         run: mvn test
-
   checkstyle:
     name: Run for checkstyle
     runs-on: ubuntu-latest
