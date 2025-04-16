@@ -66,8 +66,10 @@ public class Invoice {
     public String printInvoice() {
         StringBuilder invoice = new StringBuilder();
         List<String> list = products.keySet().stream()
-                .map(product -> product.getName() + "\t" + products.get(product) + "\t"
-                        + calculatePriceForProductAndQuantity(product, products.get(product)) + "\n")
+                .map(product -> product.getName() + "\t" + products.get(product)
+                        + "\t"
+                        + calculatePriceForProductAndQuantity(product, products.get(product))
+                        + "\n")
                 .toList();
         for (String s : list) {
             invoice.append(s);
