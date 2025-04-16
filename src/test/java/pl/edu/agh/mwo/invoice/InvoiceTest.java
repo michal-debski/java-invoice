@@ -4,14 +4,13 @@ import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import pl.edu.agh.mwo.invoice.product.DairyProduct;
-import pl.edu.agh.mwo.invoice.product.OtherProduct;
-import pl.edu.agh.mwo.invoice.product.Product;
-import pl.edu.agh.mwo.invoice.product.TaxFreeProduct;
+import pl.edu.agh.mwo.invoice.product.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+
+import static org.junit.Assert.assertEquals;
 
 public class InvoiceTest {
     private Invoice invoice;
@@ -133,7 +132,7 @@ public class InvoiceTest {
                 + LocalDate.now().getDayOfMonth() + LocalDateTime.now().getHour()
                 + LocalDateTime.now().getMinute() + LocalDateTime.now().getSecond();
         String invoiceNumber = invoice.getInvoiceNumber();
-        Assert.assertEquals(expectedInvoiceNumber, invoiceNumber);
+        assertEquals(expectedInvoiceNumber, invoiceNumber);
     }
 
     @Test
@@ -150,5 +149,19 @@ public class InvoiceTest {
                 .startsWith("Invoice number: " + invoice.getInvoiceNumber()));
         Assert.assertTrue(actualInvoicePrint
                 .endsWith("\nLiczba pozycji: " + 3));
+    }
+
+    @Test
+    public void testIfAdditionalExciseDutyForWineWasAddedIntoTotalTax() {
+        invoice.addProduct(new BottleOfWine("Carlo Rossi", new BigDecimal("10")), 1);
+        BigDecimal expected = BigDecimal.valueOf(7.86);
+        assertEquals(invoice.getTaxTotal(), expected);
+    }
+
+    @Test
+    public void testIfAdditionalExciseDutyForFuelCanisterWasAddedIntoTotalTax() {
+        invoice.addProduct(new FuelCanister("Diesel", new BigDecimal("100")), 3);
+        BigDecimal expected = BigDecimal.valueOf(16.95);
+        assertEquals(invoice.getTaxTotal(), expected);
     }
 }
